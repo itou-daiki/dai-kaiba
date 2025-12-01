@@ -18,7 +18,7 @@ function App() {
     setUserData(data)
 
     // レースデータを読み込み
-    fetch('/data/races.json')
+    fetch(`${import.meta.env.BASE_URL}data/races.json`)
       .then(res => res.json())
       .then(data => setRaces(data))
       .catch(err => console.error('Failed to load races:', err))
