@@ -10,6 +10,7 @@
 - **詳細な統計**: 的中率、回収率、収支グラフで実力を可視化
 - **データ永続化**: LocalStorageで進捗を保存、エクスポート/インポート機能付き
 - **レスポンシブデザイン**: PC・スマホどちらでも快適にプレイ可能
+- **自動データ更新**: GitHub Actionsでnetkeibaから毎日レースデータを取得
 
 ## 🚀 技術スタック
 
@@ -18,6 +19,7 @@
 - **スタイリング**: Tailwind CSS 4
 - **グラフ**: Chart.js + react-chartjs-2
 - **ホスティング**: GitHub Pages
+- **データ取得**: Python + BeautifulSoup4（スクレイピング）
 
 ## 📦 セットアップ
 
@@ -43,6 +45,35 @@ npm run preview
 
 1. リポジトリの Settings → Pages で Source を "GitHub Actions" に設定
 2. main ブランチにpushすると自動的にデプロイされます
+
+### レースデータの自動更新
+
+GitHub Actionsを使用して、netkeibaからレースデータを自動取得します。
+
+#### 手動実行
+
+```bash
+# Python依存関係のインストール
+pip install -r scripts/requirements.txt
+
+# スクレイピング実行
+python scripts/scrape_netkeiba.py
+```
+
+#### 自動実行
+
+- 毎日朝6時（JST）に自動実行
+- GitHub Actionsワークフロー: `.github/workflows/scrape.yml`
+- Actions タブから手動実行も可能
+
+#### 注意事項
+
+⚠️ **重要**: このスクレイピング機能は教育目的のみに使用してください。
+
+- netkeibaの利用規約を遵守してください
+- 過度なアクセスは避けてください（デフォルト: 2秒間隔）
+- 商用利用は禁止されています
+- データの著作権に注意してください
 
 ## 🎮 使い方
 

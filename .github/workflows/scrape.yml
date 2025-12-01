@@ -1,0 +1,55 @@
+name: Scrape Race Data
+
+on:
+  schedule:
+    # 毎日朝6時（UTC 21:00 = JST 06:00）に実行
+    - cron: '0 21 * * *'
+  workflow_dispatch:  # 手動実行も可能
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          pip install -r scripts/requirements.txt
+
+      - name: Run scraping script
+        run: |
+          cd /home/runner/work/dai-kaiba/dai-kaiba
+          python scripts/scrape_netkeiba.py
+
+      - name: Check for changes
+        id: check_changes
+        run: |
+          if git diff --quiet public/data/races.json; then
+            echo "changed=false" >> $GITHUB_OUTPUT
+          else
+            echo "changed=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Commit and push changes
+        if: steps.check_changes.outputs.changed == 'true'
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add public/data/races.json
+          git commit -m "chore: レースデータを自動更新 $(date +'%Y-%m-%d %H:%M:%S')"
+          git push
+
+      - name: No changes detected
+        if: steps.check_changes.outputs.changed == 'false'
+        run: |
+          echo "レースデータに変更がありませんでした"
